@@ -1,17 +1,41 @@
 import math
 import re
 from tkinter import*
+"""
+Калькулятор с графическим интерфейсом.
+
+Модуль реализует инженерный калькулятор с поддержкой:
+- арифметических операций (+, -, *, /)
+- тригонометрических функций (sin, cos, tan)
+- логарифмов (log, ln)
+- факториала (!)
+- констант π и e
+- степени (^)
+- скобок
+
+Запуск:
+    python Calculator.py
+"""
 
 root = Tk()
 root.title("Калькулятор")
-root.geometry("543x410")
-icon = PhotoImage(file = "icon.png")
+root.geometry("530x410")
+icon = PhotoImage(file="icon.png")
 root.iconphoto(False, icon)
 
-entry = Entry(root, font = "Arial 24", width = 30)
-entry.grid(row = 0, column = 0, columnspan = 5, ipady=15)
+entry = Entry(root, font="Arial 20", width=35)
+entry.grid(row=0, column=0, columnspan=5, sticky="nsew", ipady=20)
 
 def click(value):
+    """
+    Обрабатывает нажатие кнопки калькулятора.
+    Аргументы: value (str): Текст нажатой кнопки
+    Действия:
+        "=" - вычисляет выражение и выводит резульат
+        "C" - очищает поле ввода
+        "⌫" - удаляет последний символ
+        иначе - добавляет символ в поле ввода
+    """
     if value == "=":
         expr = entry.get()
         entry.delete(0, END)
@@ -25,6 +49,11 @@ def click(value):
 
 
 def calculate(expr):
+    """
+    Вычисляет математическое выражение.
+    Аргументы: expr (str): Строка с выражением
+    Возвращает: str: Результат вычисления или сообщение об ошибке
+    """
     try:
         expr = expr.replace("sin(", "math.sin(")
         expr = expr.replace("cos(", "math.cos(")
@@ -42,6 +71,8 @@ def calculate(expr):
         answer = eval(expr)
 
         if isinstance(answer, float):
+            if abs(answer) > 1e15:
+                return "Ошибка: слишком большое значение"
             if abs(answer) < 1e-12:
                 answer = 0.0
             elif abs(answer - round(answer)) < 1e-12:
@@ -55,16 +86,16 @@ def calculate(expr):
         return "Ошибка!"
 
 
-buttons = [("π", 1, 0, "#d9c5f0"), ("e", 1, 1, "#d9c5f0"), ("sin(", 1, 2, "#d9c5f0"), ("cos(", 1, 3, "#d9c5f0"), ("tan(", 1, 4, "#d9c5f0"),
-           ("ln(", 2, 0, "#d9c5f0"), ("log(", 2, 1, "#d9c5f0"), ("√(", 2, 2, "#d9c5f0"), ("^", 2, 3, "#d9c5f0"), ("!", 2, 4, "#d9c5f0"),
-           ("7", 3, 0, "#f0e5ff"), ("8", 3, 1, "#f0e5ff"), ("9", 3, 2, "#f0e5ff"), ("/", 3, 3, "#e7cbfb"), ("(", 3, 4, "#e8d9ff"),
-           ("4", 4, 0, "#f0e5ff"), ("5", 4, 1, "#f0e5ff"), ("6", 4, 2, "#f0e5ff"), ("*", 4, 3, "#e7cbfb"), (")", 4, 4, "#e8d9ff"),
-           ("1", 5, 0, "#f0e5ff"), ("2", 5, 1, "#f0e5ff"), ("3", 5, 2, "#f0e5ff"), ("-", 5, 3, "#e7cbfb"), ("C", 5, 4, "#ffe5e5"),
-           ("0", 6, 0, "#f0e5ff"), (".", 6, 1, "#f0e5ff"), ("=", 6, 2, "#dfb3ff"), ("+", 6, 3, "#e7cbfb"), ("⌫", 6, 4, "#e7cbfb"),]
+buttons = [("π", "#d9c5f0"), ("e", "#d9c5f0"), ("sin(", "#d9c5f0"), ("cos(", "#d9c5f0"), ("tan(", "#d9c5f0"),
+           ("ln(", "#d9c5f0"), ("log(", "#d9c5f0"), ("√(", "#d9c5f0"), ("^", "#d9c5f0"), ("!", "#d9c5f0"),
+           ("7", "#f0e5ff"), ("8", "#f0e5ff"), ("9", "#f0e5ff"), ("/", "#e7cbfb"), ("(", "#e8d9ff"),
+           ("4", "#f0e5ff"), ("5", "#f0e5ff"), ("6", "#f0e5ff"), ("*", "#e7cbfb"), (")", "#e8d9ff"),
+           ("1", "#f0e5ff"), ("2", "#f0e5ff"), ("3", "#f0e5ff"), ("-", "#e7cbfb"), ("C", "#ffe5e5"),
+           ("0", "#f0e5ff"), (".", "#f0e5ff"), ("=", "#dfb3ff"), ("+", "#e7cbfb"), ("⌫", "#e7cbfb"),]
 
-for i in buttons:
-    btn = Button(root, text = i[0], font="Arial 20", width = 6, bg = i[3], command = lambda value = i[0]: click(value))
-    btn.grid(row = i[1], column = i[2])
+for i in range(len(buttons)):
+    btn = Button(root, text=buttons[i][0], font="Arial 20", width=6, bg=buttons[i][1], command=lambda value=buttons[i][0]: click(value))
+    btn.grid(row=i // 5 + 1, column=i % 5)
 
 
 mainloop()
